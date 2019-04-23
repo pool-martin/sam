@@ -6,19 +6,19 @@ version = 1
 # batch size
 b_s = 1
 # number of rows of input images
-shape_r = 240
+shape_r = 224
 # number of cols of input images
-shape_c = 320
+shape_c = 224
 # number of rows of downsampled maps
-shape_r_gt = 30
+shape_r_gt = 28
 # number of cols of downsampled maps
-shape_c_gt = 40
+shape_c_gt = 28
 # number of rows of model outputs
-shape_r_out = 480
+shape_r_out = 224
 # number of cols of model outputs
-shape_c_out = 640
+shape_c_out = 224
 # final upsampling factor
-upsampling_factor = 16
+upsampling_factor = 8
 # number of epochs
 nb_epoch = 10
 # number of timestep
@@ -45,3 +45,5 @@ maps_val_path = '/path/to/validation/maps/'
 fixs_val_path = '/path/to/validation/fixation/maps/'
 # number of validation images
 nb_imgs_val = 5000
+# path of 2kporn frames
+frames_path = '/DL/2kporn/frames'

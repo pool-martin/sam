@@ -37,8 +37,10 @@ def generator(b_s, phase_gen='train'):
 
 
 def generator_test(b_s, imgs_test_path):
-    images = [imgs_test_path + f for f in os.listdir(imgs_test_path) if f.endswith(('.jpg', '.jpeg', '.png'))]
+#    images = [imgs_test_path + f for f in os.listdir(imgs_test_path) if f.endswith(('.jpg', '.jpeg', '.png'))]
+    images = get_file_names(imgs_test_path)
     images.sort()
+    images = [os.path.join(frames_path, i) for i in images]
 
     gaussian = np.zeros((b_s, nb_gaussian, shape_r_gt, shape_c_gt))
 
@@ -46,6 +48,17 @@ def generator_test(b_s, imgs_test_path):
     while True:
         yield [preprocess_images(images[counter:counter + b_s], shape_r, shape_c), gaussian]
         counter = (counter + b_s) % len(images)
+
+def get_file_names(folds_path):
+    file_names = []
+    sets = ['network_training_set.txt', 'network_validation_set.txt', 'test_set.txt']
+    for sset in sets:
+        set_file = os.path.join(folds_path, sset)
+        with open(set_file) as fi:
+            file_names.extend(fi.read().splitlines())
+
+    file_names = [os.path.join(f.split('_')[0], '{}.jpg'.format(f)) for f in file_names]
+    return file_names
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
@@ -86,14 +99,17 @@ if __name__ == '__main__':
 
         elif phase == "test":
             # Output Folder Path
-            output_folder = 'predictions/'
+            output_folder = '/DL/2kporn/salience_predictions/'
 
             if len(sys.argv) < 2:
                 raise SyntaxError
-            imgs_test_path = sys.argv[2]
+            folds_path = sys.argv[2]
 
-            file_names = [f for f in os.listdir(imgs_test_path) if f.endswith(('.jpg', '.jpeg', '.png'))]
+            file_names = get_file_names(folds_path)
+
+            # file_names = [f for f in os.listdir(imgs_test_path) if f.endswith(('.jpg', '.jpeg', '.png'))]
             file_names.sort()
+
             nb_imgs_test = len(file_names)
 
             if nb_imgs_test % b_s != 0:
@@ -107,13 +123,13 @@ if __name__ == '__main__':
                 print("Loading SAM-ResNet weights")
                 m.load_weights('weights/sam-resnet_salicon_weights.pkl')
 
-            print("Predicting saliency maps for " + imgs_test_path)
-            predictions = m.predict_generator(generator_test(b_s=b_s, imgs_test_path=imgs_test_path), nb_imgs_test)[0]
+            print("Predicting saliency maps for " + folds_path)
+            predictions = m.predict_generator(generator_test(b_s=b_s, imgs_test_path=folds_path), nb_imgs_test)[0]
 
 
             for pred, name in zip(predictions, file_names):
-                original_image = cv2.imread(imgs_test_path + name, 0)
+                original_image = cv2.imread(os.path.join(frames_path, name), 0)
                 res = postprocess_predictions(pred[0], original_image.shape[0], original_image.shape[1])
-                cv2.imwrite(output_folder + '%s' % name, res.astype(int))
+                cv2.imwrite(os.path.join(output_folder, name), res.astype(int))
         else:
             raise NotImplementedError
