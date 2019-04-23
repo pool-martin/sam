@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         ffmpeg  frei0r-plugins # for scikit-video
 
 RUN pip3 install --upgrade pip
-RUN pip3 install cython pandas scikit-learn sk-video scikit-video==1.1.11 opencv-python=3.0.0.0 matplotlib numpy joblib keras=1.1.0 theano=0.9.0 wrapt
+RUN pip3 install cython pandas scikit-learn sk-video scikit-video==1.1.11 opencv-python=3.1.0.0 matplotlib numpy joblib keras=1.1.0 theano=0.9.0 wrapt
 
 #USER $OUTSIDE_USER
 
