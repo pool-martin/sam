@@ -1,9 +1,11 @@
 from __future__ import division
+import os
+os.environ['THEANO_FLAGS'] = "mode=FAST_RUN,device=gpu,floatX=float32"
 from keras.optimizers import RMSprop
 from keras.callbacks import EarlyStopping, ModelCheckpoint, LearningRateScheduler
 from keras.layers import Input
 from keras.models import Model
-import os, cv2, sys
+import cv2, sys
 import numpy as np
 from config import *
 from utilities import preprocess_images, preprocess_maps, preprocess_fixmaps, postprocess_predictions
