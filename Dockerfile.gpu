@@ -17,10 +17,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libwebp-dev \
         nano \
         libsm6 libxext6 libxrender-dev \
+        sudo \
         ffmpeg  frei0r-plugins # for scikit-video
 
 RUN pip3 install --upgrade pip
 RUN pip3 install cython pandas scikit-learn sk-video scikit-video==1.1.11 opencv-python==3.1.0.0 matplotlib numpy==1.11.1 joblib keras==1.1.0 theano==0.9.0 wrapt
+
+RUN git clone --branch v0.7.6 https://github.com/Theano/libgpuarray.git && cd libgpuarray && mkdir Build && cd Build && cmake .. -DCMAKE_BUILD_TYPE=Release && make && make install && cd .. && python setup.py build && python setup.py install && ldconfig
 
 #USER $OUTSIDE_USER
 
