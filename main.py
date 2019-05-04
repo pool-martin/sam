@@ -1,3 +1,4 @@
+#!/usr/bin/env python -W ignore::UserWarning
 from __future__ import division
 import os
 os.environ['THEANO_FLAGS'] = "mode=FAST_RUN,device=cuda0,floatX=float32"
