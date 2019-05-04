@@ -15,6 +15,14 @@ def load_args():
                                     dest='output_path',
                                     help='path to output the extracted frames.',
                                     type=str, required=False, default='/DL/2kporn/saliency_frames')
+    ap.add_argument('-fs', '--filter-size',
+                                    dest='filter_size',
+                                    help='max video size to process.',
+                                    type=int, default=1000)
+    ap.add_argument('-fs', '--parallel-process',
+                                    dest='parallel_process',
+                                    help='qtd of parallel videos processed at same time.',
+                                    type=int, default=10)
     args = ap.parse_args()
     print(args)
     return args
@@ -51,13 +59,16 @@ def main():
             videos_to_process.remove(video)
             del videos_len[video]
 
+    filtered_videos = {k: v for k, v in videos_len.items() if v < args.filter_size }
+
     ordered_videos_len = sorted(videos_len.items(), key=lambda kv: kv[1])
     sorted_videos_dict = OrderedDict(ordered_videos_len)
 
-    for i, (video, len_value) in enumerate(sorted_videos_dict.items()):
-        extractSaliencyMaps(args, video)
-
-#    Parallel(n_jobs=3)(delayed(extractSaliencyMaps)(args, video) for video in videos)
+    if(args.parallel_process == 1):
+        for i, (video, len_value) in enumerate(sorted_videos_dict.items()):
+            extractSaliencyMaps(args, video)
+    else:
+        Parallel(n_jobs=args.parallel_process)(delayed(extractSaliencyMaps)(args, video) for video, len_video in sorted_videos_dict.items())
 
 if __name__ == '__main__':
     main()
