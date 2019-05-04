@@ -32,7 +32,7 @@ def extract(args, all_set):
         for i in range(1, 1001):
             video = 'v{}{}'.format(class_type, str(i).zfill(6))
 
-    Parallel(n_jobs=10)(delayed(extractSaliencyMaps)(args, video) for video in video_frames.keys())
+    Parallel(n_jobs=20)(delayed(extractSaliencyMaps)(args, video) for video in video_frames.keys())
 
     
 
