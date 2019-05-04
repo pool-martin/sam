@@ -26,6 +26,7 @@ def load_args():
 
 def assemblyImages(args, video):
 
+    print('processing video {}', format(video))
     output_dir = os.path.join(args.output_path, video)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -35,7 +36,7 @@ def assemblyImages(args, video):
         image_frame = cv2.imread(os.path.join(args.original_images, video, frame_name))
         salience_frame = cv2.imread(os.path.join(args.saliency_maps, video, frame_name))
 
-        assert(image_frame.shape == salience_frame.shape)
+#        assert(image_frame.shape == salience_frame.shape)
 
         #The obvious approach
         salience_frame = cv2.cvtColor(salience_frame, cv2.COLOR_BGR2GRAY)
