@@ -93,6 +93,9 @@ if __name__ == '__main__':
             else:
                 output_folder = sys.argv[3]
 
+            if not os.path.exists(output_folder):
+                os.makedirs(output_folder)
+
             if len(sys.argv) < 2:
                 raise SyntaxError
             imgs_test_path = sys.argv[2]
