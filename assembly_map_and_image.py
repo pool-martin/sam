@@ -34,12 +34,12 @@ def assemblyImages(args, video):
     original_frames = os.listdir(os.path.join(args.original_images, video))
     for frame_name in original_frames:
         image_frame = cv2.imread(os.path.join(args.original_images, video, frame_name))
-        salience_frame = cv2.imread(os.path.join(args.saliency_maps, video, frame_name))
+        salience_frame = cv2.imread(os.path.join(args.saliency_maps, video, frame_name), 0)
 
 #        assert(image_frame.shape == salience_frame.shape)
 
         #The obvious approach
-        salience_frame = cv2.cvtColor(salience_frame, cv2.COLOR_BGR2GRAY)
+#        salience_frame = cv2.cvtColor(salience_frame, cv2.COLOR_BGR2GRAY)
 
         #putting salience on blue layer
         image_frame[:,:,0] = salience_frame
