@@ -26,7 +26,7 @@ def extractSaliencyMaps(args, video):
 
 def video_process_finished(args, videos_len, video):
     nb_frames_processed = len(os.listdir(os.path.join(args.output_path, video)))
-    if nb_frames_processed != videos_len(video):
+    if nb_frames_processed != videos_len[video]:
         return False
     else:
         return True
