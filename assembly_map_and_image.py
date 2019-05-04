@@ -8,15 +8,15 @@ os.environ['JOBLIB_TEMP_FOLDER'] = "~/tmp"
 
 def load_args():
     ap = argparse.ArgumentParser(description='Paralelize Saliency maps process.')
-    ap.add_argument('-s', '--saliency-maps',
+    ap.add_argument('-sm', '--saliency-maps',
                                     dest='saliency_maps',
                                     help='path to dataset files.',
                                     type=str, required=False, default='/DL/2kporn/saliency_frames')
-    ap.add_argument('-o', '--original-images',
+    ap.add_argument('-oi', '--original-images',
                                     dest='original_images',
                                     help='path to dataset files.',
                                     type=str, required=False, default='/DL/2kporn/frames')
-    ap.add_argument('-o', '--output-path',
+    ap.add_argument('-op', '--output-path',
                                     dest='output_path',
                                     help='path to output the extracted frames.',
                                     type=str, required=False, default='/DL/2kporn/assembly_frames')
