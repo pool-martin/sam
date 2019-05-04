@@ -23,24 +23,11 @@ def extractSaliencyMaps(args, video):
     print('\n', command)
     call(command, shell=True)
 
-def extract(args, all_set):
-
-    class_types = ['Porn', 'NonPorn']
-    video_frames = {}
-
-    for class_type in class_types:
-        for i in range(1, 1001):
-            video = 'v{}{}'.format(class_type, str(i).zfill(6))
-
-    Parallel(n_jobs=3)(delayed(extractSaliencyMaps)(args, video) for video in video_frames.keys())
-
-    
-
 def main():
     args = load_args()
 
     videos = os.listdir(os.path.join(args.dataset_dir, "frames")) 
-    extract(args, videos)
+    Parallel(n_jobs=3)(delayed(extractSaliencyMaps)(args, video) for video in videos)
 
 if __name__ == '__main__':
     main()
