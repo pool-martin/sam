@@ -12,7 +12,7 @@ def load_args():
     ap.add_argument('-o', '--output-path',
                                     dest='output_path',
                                     help='path to output the extracted frames.',
-                                    type=str, required=False, default='/DL/2kporn/saliency_frames/')
+                                    type=str, required=False, default='/DL/2kporn/saliency_frames')
     args = ap.parse_args()
     print(args)
     return args
