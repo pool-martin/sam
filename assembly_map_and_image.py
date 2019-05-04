@@ -26,7 +26,7 @@ def load_args():
 
 def assemblyImages(args, video):
 
-    print('processing video {}', format(video))
+    print('processing video {}'.format(video))
     output_dir = os.path.join(args.output_path, video)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
