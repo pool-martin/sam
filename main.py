@@ -88,7 +88,10 @@ if __name__ == '__main__':
 
         elif phase == "test":
             # Output Folder Path
-            output_folder = 'predictions/'
+            if len(sys.argv) < 3:
+                output_folder = 'predictions/'
+            else:
+                output_folder = sys.argv[3]
 
             if len(sys.argv) < 2:
                 raise SyntaxError
