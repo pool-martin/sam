@@ -19,7 +19,7 @@ def load_args():
                                     dest='filter_size',
                                     help='max video size to process.',
                                     type=int, default=1000)
-    ap.add_argument('-fs', '--parallel-process',
+    ap.add_argument('-pp', '--parallel-process',
                                     dest='parallel_process',
                                     help='qtd of parallel videos processed at same time.',
                                     type=int, default=10)
