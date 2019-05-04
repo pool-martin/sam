@@ -19,7 +19,7 @@ def load_args():
 
 def extractSaliencyMaps(args, video):
 
-    command = "python main.py test {}/ {}/".format(os.path.join(args.dataset_dir, "frames", video), args.output_path)
+    command = "python main.py test {}/ {}/".format(os.path.join(args.dataset_dir, "frames", video), os.path.join(args.output_path, video))
     print('\n', command)
     call(command, shell=True)
 
