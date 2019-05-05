@@ -31,8 +31,9 @@ def assemblyImages(args, video):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    original_frames = os.listdir(os.path.join(args.original_images, video))
-    for frame_name in original_frames:
+#    original_frames = os.listdir(os.path.join(args.original_images, video))
+    saliency_frames = os.listdir(os.path.join(args.saliency_maps, video))
+    for frame_name in saliency_frames:
         image_frame = cv2.imread(os.path.join(args.original_images, video, frame_name))
         salience_frame = cv2.imread(os.path.join(args.saliency_maps, video, frame_name), 0)
 
