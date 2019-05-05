@@ -113,7 +113,7 @@ if __name__ == '__main__':
                 raise SyntaxError
             imgs_test_path = sys.argv[2]
 
-            if(len(sys.argv < 4)):
+            if(len(sys.argv) < 4):
                 file_names = [f for f in os.listdir(imgs_test_path) if f.endswith(('.jpg', '.jpeg', '.png'))]
             else:
                 folds_path = sys.argv[4]
