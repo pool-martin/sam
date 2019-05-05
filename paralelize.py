@@ -18,11 +18,15 @@ def load_args():
     ap.add_argument('-fs', '--filter-size',
                                     dest='filter_size',
                                     help='max video size to process.',
-                                    type=int, default=1000)
+                                    type=int, default=60000)
     ap.add_argument('-pp', '--parallel-process',
                                     dest='parallel_process',
                                     help='qtd of parallel videos processed at same time.',
                                     type=int, default=10)
+    ap.add_argument('-so', '--sort-order',
+                                    dest='sort_order',
+                                    help='order the process by (a) upward or (d) downward.',
+                                    type=str, default='a')
     args = ap.parse_args()
     print(args)
     return args
@@ -59,9 +63,19 @@ def main():
             videos_to_process.remove(video)
             del videos_len[video]
 
-    filtered_videos = {k: v for k, v in videos_len.items() if v < args.filter_size }
+    print("videos to process before filter by len: {} in ({}) order".format(len(videos_len), args.sort_order))
+    for video in videos_to_process:
+        print("videos_len[{}]: {} | filter_size: {}".format(video, videos_len[video], args.filter_size))
+        if(args.sort_order == 'a'):
+            if(videos_len[video] > args.filter_size):
+                del videos_len[video]
+        else:
+            if(videos_len[video] < args.filter_size):
+                del videos_len[video]
 
-    ordered_videos_len = sorted(videos_len.items(), key=lambda kv: kv[1])
+    print("videos to process after filter by len: {} in ({}) order".format(len(videos_len), args.sort_order))
+
+    ordered_videos_len = sorted(videos_len.items(), key=lambda kv: kv[1], reverse= (True if args.sort_order == 'd' else False))
     sorted_videos_dict = OrderedDict(ordered_videos_len)
 
     if(args.parallel_process == 1):
