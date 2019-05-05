@@ -27,15 +27,34 @@ def load_args():
                                     dest='sort_order',
                                     help='order the process by (a) upward or (d) downward.',
                                     type=str, default='a')
+    ap.add_argument('-cp', '--class-to-process',
+                                    dest='class_to_process',
+                                    help='Process only (Porn) or (NonPorn).',
+                                    type=str, default='')
+    ap.add_argument('-s', '--split',
+                                    dest='split',
+                                    help='split to process',
+                                    type=str, default='s1_a')
+
     args = ap.parse_args()
     print(args)
     return args
 
 def extractSaliencyMaps(args, video):
 
-    command = "python main.py test {}/ {}/".format(os.path.join(args.dataset_dir, "frames", video), os.path.join(args.output_path, video))
+    command = "python main.py test {}/ {}/ /Exp/2kporn/splits/2D/{}/2D/1_fps/opencv/ {}".format(os.path.join(args.dataset_dir, "frames", video), os.path.join(args.output_path, video), args.split, video)
     print('\n', command)
     call(command, shell=True)
+
+def get_dataset(split):
+    folds_path = "/Exp/2kporn/splits/2D/{}/2D/1_fps/opencv/".format(split)
+    file_names = []
+    sets = ['network_training_set.txt', 'network_validation_set.txt', 'test_set.txt']
+    for sset in sets:
+        set_file = os.path.join(folds_path, sset)
+        with open(set_file) as fi:
+            file_names.extend(fi.read().splitlines())
+    return file_names
 
 def video_process_finished(args, videos_len, video):
     nb_frames_processed = len(os.listdir(os.path.join(args.output_path, video)))
@@ -44,10 +63,18 @@ def video_process_finished(args, videos_len, video):
     else:
         return True
 
-def get_lens(args, videos):
+def get_video_frames(split, dataset_bag, video):
+
+    # vPorn000002_1_0 vPorn000002_1_151.jpg
+#    file_names = [os.path.join(f.split('_')[0], '{}.jpg'.format(f)) for f in dataset_bag]
+    video_frames = [f for f in dataset_bag if video in f]
+    return video_frames
+
+def get_lens(args, dataset_bag, videos):
     video_len = {}
     for video in videos:
-        video_len[video] = len(os.listdir(os.path.join(args.dataset_dir, "frames", video)))
+#        video_len[video] = len(os.listdir(os.path.join(args.dataset_dir, "frames", video)))
+        video_len[video] = len(get_video_frames(args.split, dataset_bag, video))
     return video_len
 
 def main():
@@ -56,7 +83,8 @@ def main():
     videos_to_process = os.listdir(os.path.join(args.dataset_dir, "frames"))
     videos_processed = os.listdir(os.path.join(args.output_path))
 
-    videos_len = get_lens(args, videos_to_process)
+    dataset_bag = get_dataset(args.split)
+    videos_len = get_lens(args, dataset_bag, videos_to_process)
 
     for video in videos_processed:
         if (video_process_finished(args, videos_len, video)):
@@ -65,7 +93,6 @@ def main():
 
     print("videos to process before filter by len: {} in ({}) order".format(len(videos_len), args.sort_order))
     for video in videos_to_process:
-        print("videos_len[{}]: {} | filter_size: {}".format(video, videos_len[video], args.filter_size))
         if(args.sort_order == 'a'):
             if(videos_len[video] > args.filter_size):
                 del videos_len[video]

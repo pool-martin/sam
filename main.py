@@ -39,8 +39,7 @@ def generator(b_s, phase_gen='train'):
         counter = (counter + b_s) % len(images)
 
 
-def generator_test(b_s, imgs_test_path):
-    images = [imgs_test_path + f for f in os.listdir(imgs_test_path) if f.endswith(('.jpg', '.jpeg', '.png'))]
+def generator_test(b_s, images):
     images.sort()
 
     gaussian = np.zeros((b_s, nb_gaussian, shape_r_gt, shape_c_gt))
@@ -49,6 +48,19 @@ def generator_test(b_s, imgs_test_path):
     while True:
         yield [preprocess_images(images[counter:counter + b_s], shape_r, shape_c), gaussian]
         counter = (counter + b_s) % len(images)
+
+def get_video_frames(folds_path, video):
+    file_names = []
+    sets = ['network_training_set.txt', 'network_validation_set.txt', 'test_set.txt']
+    for sset in sets:
+        set_file = os.path.join(folds_path, sset)
+        with open(set_file) as fi:
+            file_names.extend(fi.read().splitlines())
+
+    file_names = ['{}.jpg'.format(f) for f in file_names]
+    video_frames = [f for f in file_names if video in f]
+    return video_frames
+
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
@@ -101,8 +113,16 @@ if __name__ == '__main__':
                 raise SyntaxError
             imgs_test_path = sys.argv[2]
 
-            file_names = [f for f in os.listdir(imgs_test_path) if f.endswith(('.jpg', '.jpeg', '.png'))]
+            if(len(sys.argv < 4)):
+                file_names = [f for f in os.listdir(imgs_test_path) if f.endswith(('.jpg', '.jpeg', '.png'))]
+            else:
+                folds_path = sys.argv[4]
+                video = sys.argv[5]
+                file_names = get_video_frames(folds_path, video)
+
             file_names.sort()
+            file_names_with_path = [os.path.join(imgs_test_path, f) for f in os.listdir(imgs_test_path) if f.endswith(('.jpg', '.jpeg', '.png'))]
+
             nb_imgs_test = len(file_names)
 
             if nb_imgs_test % b_s != 0:
@@ -117,7 +137,7 @@ if __name__ == '__main__':
                 m.load_weights('weights/sam-resnet_salicon_weights.pkl')
 
             print("Predicting saliency maps for " + imgs_test_path)
-            predictions = m.predict_generator(generator_test(b_s=b_s, imgs_test_path=imgs_test_path), nb_imgs_test)[0]
+            predictions = m.predict_generator(generator_test(b_s=b_s, images=file_names_with_path), nb_imgs_test)[0]
 
 
             for pred, name in zip(predictions, file_names):
