@@ -27,10 +27,6 @@ def load_args():
                                     dest='sort_order',
                                     help='order the process by (a) upward or (d) downward.',
                                     type=str, default='a')
-    ap.add_argument('-cp', '--class-to-process',
-                                    dest='class_to_process',
-                                    help='Process only (Porn) or (NonPorn).',
-                                    type=str, default='')
     ap.add_argument('-s', '--split',
                                     dest='split',
                                     help='split to process',
@@ -56,9 +52,12 @@ def get_dataset(split):
             file_names.extend(fi.read().splitlines())
     return file_names
 
-def video_process_finished(args, videos_len, video):
-    nb_frames_processed = len(os.listdir(os.path.join(args.output_path, video)))
-    if nb_frames_processed != videos_len[video]:
+def video_process_finished(args, videos_len, dataset_bag, video):
+    video_frames_to_process = get_video_frames(args.split, dataset_bag, video)
+    video_frames_processed = os.listdir(os.path.join(args.output_path, video))
+
+    missed_frames_to_process = [f for f in video_frames_to_process if f+'.jpg' not in video_frames_processed]
+    if len(missed_frames_to_process) > 0:
         return False
     else:
         return True
@@ -87,7 +86,7 @@ def main():
     videos_len = get_lens(args, dataset_bag, videos_to_process)
 
     for video in videos_processed:
-        if (video_process_finished(args, videos_len, video)):
+        if (video_process_finished(args, videos_len, dataset_bag, video)):
             videos_to_process.remove(video)
             del videos_len[video]
 
