@@ -47,17 +47,31 @@ def assemblyImages(args, video):
 
         cv2.imwrite(os.path.join(args.output_path, video, frame_name), image_frame.astype(int))
 
-def video_process_finished(args, videos_len, video):
-    nb_frames_processed = len(os.listdir(os.path.join(args.output_path, video)))
-    if nb_frames_processed != videos_len[video]:
+def get_dataset(split):
+    folds_path = "/Exp/2kporn/splits/{}/2D/1_fps/opencv/".format(split)
+    file_names = []
+    sets = ['network_training_set.txt', 'network_validation_set.txt', 'test_set.txt']
+    for sset in sets:
+        set_file = os.path.join(folds_path, sset)
+        with open(set_file) as fi:
+            file_names.extend(fi.read().splitlines())
+    return file_names
+
+def video_process_finished(args, videos_len, dataset_bag, video):
+    video_frames_to_process = get_video_frames(args.split, dataset_bag, video)
+    video_frames_processed = os.listdir(os.path.join(args.output_path, video))
+
+    missed_frames_to_process = [f for f in video_frames_to_process if f+'.jpg' not in video_frames_processed]
+    if len(missed_frames_to_process) > 0:
         return False
     else:
         return True
 
-def get_lens(args, videos):
+def get_lens(args, dataset_bag, videos):
     video_len = {}
     for video in videos:
-        video_len[video] = len(os.listdir(os.path.join(args.original_images, video)))
+#        video_len[video] = len(os.listdir(os.path.join(args.dataset_dir, "frames", video)))
+        video_len[video] = len(get_video_frames(args.split, dataset_bag, video))
     return video_len
 
 def main():
@@ -66,10 +80,11 @@ def main():
     videos_to_process = os.listdir(args.original_images)
     videos_processed = os.listdir(os.path.join(args.output_path))
 
-    videos_len = get_lens(args, videos_to_process)
+    dataset_bag = get_dataset(args.split)
+    videos_len = get_lens(args, dataset_bag, videos_to_process)
 
     for video in videos_processed:
-        if (video_process_finished(args, videos_len, video)):
+        if (video_process_finished(args, videos_len, dataset_bag, video)):
             videos_to_process.remove(video)
             del videos_len[video]
 
