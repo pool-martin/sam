@@ -20,6 +20,14 @@ def load_args():
                                     dest='output_path',
                                     help='path to output the extracted frames.',
                                     type=str, required=False, default='/DL/2kporn/assembly_frames')
+    ap.add_argument('-pp', '--parallel-process',
+                                    dest='parallel_process',
+                                    help='qtd of parallel videos processed at same time.',
+                                    type=int, default=10)
+    ap.add_argument('-s', '--split',
+                                    dest='split',
+                                    help='split to process',
+                                    type=str, default='s1_a')
     args = ap.parse_args()
     print(args)
     return args
@@ -67,6 +75,13 @@ def video_process_finished(args, videos_len, dataset_bag, video):
     else:
         return True
 
+def get_video_frames(split, dataset_bag, video):
+
+    # vPorn000002_1_0 vPorn000002_1_151.jpg
+#    file_names = [os.path.join(f.split('_')[0], '{}.jpg'.format(f)) for f in dataset_bag]
+    video_frames = [f for f in dataset_bag if video in f]
+    return video_frames
+
 def get_lens(args, dataset_bag, videos):
     video_len = {}
     for video in videos:
@@ -83,18 +98,18 @@ def main():
     dataset_bag = get_dataset(args.split)
     videos_len = get_lens(args, dataset_bag, videos_to_process)
 
-    for video in videos_processed:
+    for video in videos_to_process:
         if (video_process_finished(args, videos_len, dataset_bag, video)):
-            videos_to_process.remove(video)
             del videos_len[video]
 
     ordered_videos_len = sorted(videos_len.items(), key=lambda kv: kv[1])
     sorted_videos_dict = OrderedDict(ordered_videos_len)
 
-    for i, (video, len_value) in enumerate(sorted_videos_dict.items()):
-        assemblyImages(args, video)
-
-#    Parallel(n_jobs=3)(delayed(extractSaliencyMaps)(args, video) for video in videos)
+    if(args.parallel_process == 1):
+        for i, (video, len_value) in enumerate(sorted_videos_dict.items()):
+                assemblyImages(args, video)
+    else:
+        Parallel(n_jobs=args.parallel_process)(delayed(assemblyImages)(args, video) for video, len_video in sorted_videos_dict.items())
 
 if __name__ == '__main__':
     main()
