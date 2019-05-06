@@ -38,12 +38,12 @@ def load_args():
 
 def extractSaliencyMaps(args, video):
 
-    command = "python main.py test {}/ {}/ /Exp/2kporn/splits/2D/{}/2D/1_fps/opencv/ {}".format(os.path.join(args.dataset_dir, "frames", video), os.path.join(args.output_path, video), args.split, video)
+    command = "python main.py test {}/ {}/ /Exp/2kporn/splits/{}/2D/1_fps/opencv/ {}".format(os.path.join(args.dataset_dir, "frames", video), os.path.join(args.output_path, video), args.split, video)
     print('\n', command)
     call(command, shell=True)
 
 def get_dataset(split):
-    folds_path = "/Exp/2kporn/splits/2D/{}/2D/1_fps/opencv/".format(split)
+    folds_path = "/Exp/2kporn/splits/{}/2D/1_fps/opencv/".format(split)
     file_names = []
     sets = ['network_training_set.txt', 'network_validation_set.txt', 'test_set.txt']
     for sset in sets:
