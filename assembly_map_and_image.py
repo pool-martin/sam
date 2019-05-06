@@ -67,7 +67,7 @@ def get_dataset(split):
 
 def video_process_finished(args, videos_len, dataset_bag, video):
     video_frames_to_process = get_video_frames(args.split, dataset_bag, video)
-    video_frames_processed = os.listdir(os.path.join(args.output_path, video))
+    video_frames_processed = os.listdir(os.path.join(args.output_path, video)) 
 
     missed_frames_to_process = [f for f in video_frames_to_process if f+'.jpg' not in video_frames_processed]
     if len(missed_frames_to_process) > 0:
@@ -98,7 +98,7 @@ def main():
     dataset_bag = get_dataset(args.split)
     videos_len = get_lens(args, dataset_bag, videos_to_process)
 
-    for video in videos_to_process:
+    for video in videos_processed:
         if (video_process_finished(args, videos_len, dataset_bag, video)):
             del videos_len[video]
 
